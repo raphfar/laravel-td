@@ -75,8 +75,16 @@ class ArticleController extends Controller
     public function show($id)
     {
         $article = Article::find($id);
-        return view('articles.show', compact('article'));
+
+        if(!$article) {
+            return redirect()->route('article.index');
+        }
+
+        $comments = $article->comments;
+
+        return view('articles.show', compact('article', 'comments'));
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -87,6 +95,11 @@ class ArticleController extends Controller
     public function edit($id)
     {
         $article = Article::find($id);
+
+        if(!$article) {
+            return redirect()->route('article.index');
+        }
+
         return view('articles.edit', compact('article'));
     }
 
