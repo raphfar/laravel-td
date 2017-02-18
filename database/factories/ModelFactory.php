@@ -30,3 +30,15 @@ $factory->define(App\Article::class, function (Faker\Generator $faker) {
         'user_id' => $faker->numberBetween(1, 20),
     ];
 });
+$factory->define(App\Comment::class, function (Faker\Generator $faker) {
+    return [
+        'content' => $faker->paragraph,
+        'user_id' => function () {
+            return factory(App\User::class)->create()->id;
+        },
+        'article_id' => function () {
+            return factory(App\User::class)->create()->id;
+        }
+
+    ];
+});
