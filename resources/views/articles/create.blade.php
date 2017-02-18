@@ -12,7 +12,7 @@
                             {{csrf_field()}}
                             <input class="form-control" type="text" name="title" placeholder="Titre">
                             <textarea class="form-control" name="content" placeholder="Contenu"></textarea>
-                            <textarea class="form-control" name="images" placeholder="placez l'url de votre image"></textarea>
+                            
                             <input type="submit" value="publier" class="btn btn-info">
                         </form>
                     </div>
