@@ -1,47 +1,111 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Article;
 use App\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Input;
-
+use Illuminate\Support\Facades\Redirect;
 class CommentController extends Controller
 {
-
-    public function admin() {
-        $comments = Comment::all();
-        return view('comments.admin', compact('comments'));
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
     }
-
-    public function delete($id) {
-        $comments = Comment::find($id);
-        $comments->delete();
-        return redirect()->back()->with('success', 'Commentaire supprimé');
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
     }
-
-    public function update(Request $request, $id) {
-        $comment = Comment::find($id);
-
-            $comment->content = $request->content;
-            $comment->save();
-
-        return redirect()->route('comments.admin', [$comment->id])->with('success', 'Commentaire modifié');
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $this->validate($request,
+            [
+                'content' => 'required|min:10',
+            ],
+            [
+                'content.required' => 'Un contenu est nécessaire !'
+            ]);
+        $input = $request->input();
+        $input['user_id'] = Auth::user()->id;
+        $comment = new Comment;
+        $comment->fill($input)->save();
+        $id = $input['article_id'];
+        return redirect()->route('article.show', compact('id'))
+            ->with('success', 'Votre commentaire a bien été envoyé !');
     }
-
-
-    public function create($id) {
-
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
         $article = Article::find($id);
-        $inputs = Input::all();
-
-        Comment::create([
-            'user_id' => Auth::user()->id,
-            'article_id' => $article->id,
-            'content' => $inputs['comment'],
-        ]);
-        return redirect()->route('article.show', [$article->id])->with('success', 'Commentaire ajouté');
+        $articles = Article::paginate(5);
+        $comments = Comment::all();
+        $comment = Comment::find($id);
+        return view('articles.show', compact('article', 'comments', 'comment', 'articles'));
+    }
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        $article = Article::find($id);
+        $comment = Comment::find($id);
+        return view('articles.comment', compact('comment', 'article'));
+    }
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        $this->validate($request, [
+            'content' => 'required|min:10',
+        ],
+            [
+                'content.required' => 'Un contenu est requis'
+            ]);
+        $comment = Comment::find($id);
+        $input = $request->input();
+        $comment->fill($input)->save();
+        $article_id = $request->article_id;
+        return redirect()->route('article.show', compact('article_id'))
+            ->with('success', 'Vous avez modifié le commentaire  !');
+    }
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $comment = Comment::find($id);
+        $comment->delete();
+        return Redirect::back()
+            ->with('success', 'Commentaire supprimé !');
     }
 }
