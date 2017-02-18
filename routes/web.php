@@ -15,16 +15,18 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/hello', function () {
+    return view('welcome');
+});
+
+Route::get('/user', function () {
+    return view('user');
+});
+
 Auth::routes();
 
 Route::get('/home', 'HomeController@index');
-
 Route::resource('/article', 'ArticleController');
-
-Route::get('/user', function() {
-    return view('users.index');
-});
-
-Route::get('/admin', function() {
-    return view('admin');
-});
+Route::resource('/form', 'FormController');
+Route::resource('/comment', 'CommentController');
+Route::resource('/admin', 'AdminArticleController');

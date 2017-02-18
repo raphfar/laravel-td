@@ -43,8 +43,8 @@ class ArticleController extends Controller
                 'content' => 'required|min:10',
             ],
             [
-                'title.required' => 'Le titre est requis',
-                'content.required' => 'Le contenu est requis'
+                'title.required' => 'Un titre est requis',
+                'content.required' => 'Un contenu est requis'
             ]);
         $input = $request->input();
         $input['user_id'] = Auth::user()->id;
