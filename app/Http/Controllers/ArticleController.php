@@ -8,10 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class ArticleController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth')->except('show', 'index');
-    }
     /**
      * Display a listing of the resource.
      *
@@ -19,9 +15,9 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        $articles = Article::paginate(10);
+        $articles = Article::paginate(5);
 
-        return view('articles.index', compact('articles'));
+        return view('articles.index', ['articles' => $articles]);
     }
 
     /**
@@ -37,39 +33,45 @@ class ArticleController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $this->validate($request,
-            [
-                'title' => 'required|min:5',
-                'content' => 'required|min:10'
-            ],
-            [
-                'title.required' => 'Titre requis',
-                'title.min' => 'Minimum 5 caractères',
 
-                'content.required' => 'Contenu requis',
-                'content.min' => 'Minimum 10 caractères'
-            ]);
+        $this->validate($request, [
+            'title' => 'required',
+            'content' => 'required'
+        ],
+        [
+           'content.required' => 'Content obligatoire'
+        ]);
 
-        $article = new Article();
-        $input = $request->input();
-        $input['user_id'] = Auth::user()->id;
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $filename = $image->getClientOriginalExtension();
+            $location = public_path('images/' . $image->getClientOriginalExtension());
+            Image::make($image)->resize(1200, 400)->save($location);
+        }
 
-        $article
-            ->fill($input)
-            ->save();
+        Article::create([
+            'user_id' => Auth::user()->id,
+            'title' => $request->title,
+            'content' => $request->content,
+            'image' => public_path('images/' . $image->getClientOriginalExtension())
+        ]);
 
-        return redirect()->route('article.index')->with('success', 'L\'article a bien été publié');;
+
+
+
+        return redirect()->route('article.index');
+
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -85,11 +87,10 @@ class ArticleController extends Controller
         return view('articles.show', compact('article', 'comments'));
     }
 
-
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -106,46 +107,70 @@ class ArticleController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int $id
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request,
-            [
-                'title' => 'required|min:5',
-                'content' => 'required|min:10'
-            ],
-            [
-                'title.required' => 'Titre requis',
-                'title.min' => 'Minimum 5 caractères',
-
-                'content.required' => 'Contenu requis',
-                'content.min' => 'Minimum 10 caractères'
-            ]);
+        $this->validate($request, [
+            'title' => 'required',
+            'content' => 'required'
+        ],
+        [
+            'content.required' => 'Contenu obligatoire'
+        ]);
 
         $article = Article::find($id);
-        $input = $request->input();
 
-        $article
-            ->fill($input)
-            ->save();
+        $article->title = $request->title;
+        $article->content = $request->content;
+        $article->save();
 
-        return redirect()->route('article.index')->with('success', 'L\'article a bien été modifié');;
+        return redirect()->route('article.show', [$article->id])->with('success', 'Article modifié');
+
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int $id
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         $article = Article::find($id);
+
         $article->delete();
 
-        return redirect()->route('article.index')->with('success', 'L\'article a bien été supprimé');
+        return redirect()->route('article.index')->with('success', 'Article supprimé');
+
+    }
+
+    public function isLikedByMe($id)
+    {
+        $article = Article::findOrFail($id)->first();
+        if (Like::whereUserId(Auth::id())->whereArticleId($article->id)->exists()){
+            return 'true';
+        }
+        return 'false';
+    }
+
+    public function like(Article $article)
+    {
+        $existing_like = Like::withTrashed()->wherePostId($article->id)->whereUserId(Auth::id())->first();
+
+        if (is_null($existing_like)) {
+            Like::create([
+                'post_id' => $article->id,
+                'user_id' => Auth::id()
+            ]);
+        } else {
+            if (is_null($existing_like->deleted_at)) {
+                $existing_like->delete();
+            } else {
+                $existing_like->restore();
+            }
+        }
     }
 }
