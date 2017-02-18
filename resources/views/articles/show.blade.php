@@ -5,23 +5,19 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md-12">
-            <div class="thumbnail">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="panel panel-default">
                 @include('messages.success')
                 @include('messages.error')
-                <img src="{{ $article->images }}" style: width="150px">
-                <div class="caption-full">
-                    <h4>
-                        Article Posté par : {{ $article->user->name }}
-                    </h4>
-                    <div class="panel-body">
-                        <h1>{{ $article->title }}</h1>
+                <div class="panel-heading"><h1>{{ $article->title }}</h1></div>
 
-                        <h2>{{ $article->content }}</h2>
-                        Partager l'article : {{URL::to('/article/'.$article->id)}}
+                     <div class="panel-body">Article publié par : {{ $article->user->name }}</div>
+                     <div class="panel-body">
+
+                        {{ $article->content }} </div>
                         <form method="POST" action="{{ route('article.destroy', $article->id)}}">
                             {{csrf_field()}}
-                            <div class="panel-heading">
+                            <div class="panel-default">
                                 @if(Auth::check() and auth()->user()->isAdmin or Auth::check() and $articles = Auth::user()->id == $article->user->id)
                                     <a href="{{ route('article.edit', $article->id) }}" class="btn btn-primary">Modifier</a>
                                     <input type="hidden" name="_method" value="DELETE">
@@ -29,8 +25,7 @@
                                 @endif
                             </div>
                         </form>
-                    <div class="ratings">
-                </div>
+
             </div>
             <div class="well">
                     <div class="panel-body">
@@ -39,7 +34,7 @@
                                 {{csrf_field()}}
                                 <input type="hidden" name="article_id" value="{{ $article->id }}">
                                 <textarea class="form-control" name="content" placeholder="Commentaire"></textarea>
-                                <div class="panel-heading">
+                                <div class="panel-default">
                                     <input type="submit" value="envoyer" class="btn btn-info">
                                 </div>
                             </form>
@@ -50,8 +45,9 @@
                     <div class="col-md-12">
                         @foreach($comments as $comment)
                             @if($comment->article_id == $article->id)
-                                <p>Commentaire Posté par : {{$comment->user->name}} </p>
-                                <p>{{ $comment->content }}</p>
+                                <h4>{{ $comment->content }}</h4>
+                                <h5>Commentaire publié par : {{$comment->user->name}} </h5>
+
                                 <div class="panel-heading">
                                 @if(Auth::check() and auth()->user()->isAdmin or Auth::check() and $comments = Auth::user()->id == $comment->user->id)
                                     <a href="{{ route('comment.edit', $comment->id) }}" class="btn btn-primary">Modifier</a>
