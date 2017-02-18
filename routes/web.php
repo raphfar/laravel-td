@@ -22,7 +22,7 @@ Route::get('/home', 'HomeController@index');
 Route::resource('/article', 'ArticleController');
 
 Route::get('/user', function() {
-    return view('user');
+    return view('users.index');
 });
 
 Route::get('/admin', function() {

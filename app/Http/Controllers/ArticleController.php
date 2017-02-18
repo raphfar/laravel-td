@@ -47,18 +47,13 @@ class ArticleController extends Controller
            'content.required' => 'Content obligatoire'
         ]);
 
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $filename = $image->getClientOriginalExtension();
-            $location = public_path('images/' . $image->getClientOriginalExtension());
-            Image::make($image)->resize(1200, 400)->save($location);
-        }
+     
 
         Article::create([
             'user_id' => Auth::user()->id,
             'title' => $request->title,
             'content' => $request->content,
-            'image' => public_path('images/' . $image->getClientOriginalExtension())
+           
         ]);
 
 
