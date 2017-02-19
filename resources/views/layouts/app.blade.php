@@ -18,7 +18,9 @@
         window.Laravel = {!! json_encode([
             'csrfToken' => csrf_token(),
         ]) !!};
+
     </script>
+    <script src="https://use.fontawesome.com/4c723535a7.js"></script>
 </head>
 <body>
 <div id="app">

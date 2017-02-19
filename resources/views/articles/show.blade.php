@@ -21,6 +21,26 @@
                     <div class="panel-body">
 
                         {{ $article->content }} </div>
+
+                    <?php $currentUrl = Request::url();?>
+
+                    <div class="center-block text-center">
+                        <p>Partagez sur les réseaux sociaux:
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{$currentUrl}}"
+                               class="social-links">
+
+                                <i class="fa fa-facebook-official fa-2x facebook"></i>
+                            </a>
+
+                            <a href="https://twitter.com/intent/tweet/?url={{$currentUrl}}&text={{$article->title}}"
+                               class="social-links">
+
+                                <i class="fa fa-twitter fa-2x twitter"></i>
+                            </a>
+
+                        </p>
+                    </div>
+
                     <form method="POST" action="{{ route('article.destroy', $article->id)}}">
                         {{csrf_field()}}
                         <div class="panel-default">
