@@ -10,8 +10,8 @@
                     @include('messages.success')
                     @include('messages.error')
 
-                    @if(!empty($articles->picture))
-                        <img src="/uploads/{{$articles->picture}}">
+                    @if(!empty($article->picture))
+                        <img src="/uploads/{{$article->picture}}" class="img-responsive">
                     @endif
 
 
