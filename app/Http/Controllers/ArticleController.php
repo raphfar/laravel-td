@@ -4,6 +4,9 @@ use App\Article;
 use App\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Intervention\Image\Facades\Image;
+
 class ArticleController extends Controller
 {
     public function __construct()
@@ -41,14 +44,20 @@ class ArticleController extends Controller
             [
                 'title' => 'required|min:3',
                 'content' => 'required|min:10',
+                'picture' => 'required',
             ],
             [
                 'title.required' => 'Un titre est requis',
                 'content.required' => 'Un contenu est requis'
             ]);
+        $articlePicture = $request->file('picture');
+        $extension = Input::file('picture')->getClientOriginalExtension();
+        $filename = rand(111, 999) . '.' . $extension;
+        Image::make($articlePicture)->save(public_path('/uploads/' . $filename));
+        $article = new Article;
         $input = $request->input();
         $input['user_id'] = Auth::user()->id;
-        $article = new Article;
+        $input['picture'] = $filename;
         $article->fill($input)->save();
         return redirect()->route('article.index')
             ->with('success', 'L\'article a bien été publié !');

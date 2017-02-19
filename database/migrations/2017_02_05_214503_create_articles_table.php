@@ -19,6 +19,7 @@ class CreateArticlesTable extends Migration
             $table->longText('content');
             $table->integer('user_id')->unsigned();
             $table->timestamps();
+            $table->string('picture')->nullable();
         });
     }
 
