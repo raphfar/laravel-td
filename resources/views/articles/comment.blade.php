@@ -5,7 +5,7 @@
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <div class="panel panel-default">
-                    <div class="panel-heading">Editer un commentaire</div>
+                    <div class="panel-heading"><h1>Editer un commentaire</h1></div>
                     @include('messages.error')
                     <div class="panel-body">
                         <form method="POST" action="{{ route('comment.update', $comment->id) }}">
@@ -14,7 +14,7 @@
 
                             <textarea class="form-control" name="content" placeholder="Contenu">{{$comment->content}}</textarea>
 
-                            <input type="submit" value="publier" class="btn btn-info">
+                            <input type="submit" value="publier" class="btn btn-success">
                         </form>
                     </div>
                 </div>

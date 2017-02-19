@@ -6,7 +6,7 @@
             <div class="col-md-8 col-md-offset-2">
                 @include('messages.success')
                 <div class="panel panel-default">
-                    <div class="panel-heading">Liste des articles</div>
+                    <div class="panel-heading"><h1>Liste des articles</h1></div>
 
                     <div class="panel-body">
                         <ul>

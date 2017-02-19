@@ -24,7 +24,7 @@
 
                     <?php $currentUrl = Request::url();?>
 
-                    <div class="center-block text-center">
+                    <div class="text-center">
                         <p>Partagez sur les réseaux sociaux:
                             <a href="https://www.facebook.com/sharer/sharer.php?u={{$currentUrl}}"
                                class="social-links">
@@ -61,7 +61,7 @@
                                 <input type="hidden" name="article_id" value="{{ $article->id }}">
                                 <textarea class="form-control" name="content" placeholder="Commentaire"></textarea>
                                 <div class="panel-default">
-                                    <input type="submit" value="envoyer" class="btn btn-info">
+                                    <input type="submit" value="envoyer" class="btn btn-success">
                                 </div>
                             </form>
                         @endif
